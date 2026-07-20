@@ -1,0 +1,7 @@
+Options -Indexes
+
+# Evita que un archivo subido se ejecute como script aunque logre pasar
+# las validaciones de tipo/extensión (defensa en profundidad).
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|cgi|pl)$">
+  Require all denied
+</FilesMatch>

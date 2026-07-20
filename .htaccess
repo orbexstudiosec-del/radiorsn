@@ -1,0 +1,10 @@
+Options -Indexes
+
+<IfModule mod_php.c>
+  php_flag display_errors off
+</IfModule>
+
+# Bloquea el acceso directo a archivos de configuración y SQL
+<FilesMatch "\.(sql|env|log|md)$">
+  Require all denied
+</FilesMatch>

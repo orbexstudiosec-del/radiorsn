@@ -1,0 +1,8 @@
+# Configuración local de desarrollo (credenciales de tu base de datos local).
+# NUNCA debe subirse a un repositorio ni a un servidor de producción.
+includes/config.local.php
+
+# Archivos basura típicos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini

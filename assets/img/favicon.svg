@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="rsnRing" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd400"/>
+      <stop offset=".5" stop-color="#f7941d"/>
+      <stop offset="1" stop-color="#e2231a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="16" cy="16" r="16" fill="#fff"/>
+  <circle cx="16" cy="16" r="13.2" fill="none" stroke="url(#rsnRing)" stroke-width="2.8"/>
+  <g transform="translate(8.6,8.6) scale(0.93)" fill="#14161c">
+    <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+    <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+  </g>
+</svg>
