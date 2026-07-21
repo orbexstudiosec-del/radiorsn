@@ -27,7 +27,7 @@ if (!defined('SITE_URL')) define('SITE_URL', 'https://www.radiorsn.com'); // cam
 
 // ---- Stream de audio ----
 // Reemplaza por la URL real de tu stream Shoutcast/Icecast cuando la tengas.
-if (!defined('STREAM_URL')) define('STREAM_URL', 'https://stream.zeno.fm/f3wvbbqmdg8uv');
+if (!defined('STREAM_URL')) define('STREAM_URL', 'https://a8.asurahosting.com:6560/radio.mp3');
 if (!defined('STREAM_TITLE_URL')) define('STREAM_TITLE_URL', ''); // opcional: endpoint que devuelve el título de la canción actual (JSON), déjalo vacío si no aplica
 
 // ---- Quiénes somos ----
