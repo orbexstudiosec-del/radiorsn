@@ -32,6 +32,7 @@
       <p class="footer-bottom text-center small mb-0">
         &copy; <?= date('Y') ?> <?= h(SITE_NAME) ?>. Todos los derechos reservados.
         &middot; Desarrollado por <a href="https://orbexec.com/" target="_blank" rel="noopener">Orbex Studios</a>
+        &middot; <a href="admin/">Admin</a>
       </p>
     </div>
   </footer>
