@@ -27,6 +27,8 @@ if (!isset($pageDescription)) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Bootstrap Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<!-- Video.js (reproductor de TV en vivo del slider) -->
+<link href="https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css" rel="stylesheet">
 <!-- Estilos propios -->
 <link href="assets/css/style.css" rel="stylesheet">
 </head>

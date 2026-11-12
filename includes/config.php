@@ -30,6 +30,10 @@ if (!defined('SITE_URL')) define('SITE_URL', 'https://www.radiorsn.com'); // cam
 if (!defined('STREAM_URL')) define('STREAM_URL', 'https://a8.asurahosting.com:6560/radio.mp3');
 if (!defined('STREAM_TITLE_URL')) define('STREAM_TITLE_URL', ''); // opcional: endpoint que devuelve el título de la canción actual (JSON), déjalo vacío si no aplica
 
+// ---- TV en vivo (video HLS que se muestra como primer slide del inicio) ----
+// Déjalo vacío ('') para ocultar el slide de video.
+if (!defined('TV_STREAM_URL')) define('TV_STREAM_URL', 'https://cloudpro.servidoresdestream.com:8081/8106/index.m3u8');
+
 // ---- Quiénes somos ----
 if (!defined('SITE_QUIENES_SOMOS')) define('SITE_QUIENES_SOMOS',
     'Radio RSN (Señal del Norte) es una emisora dedicada al deporte y a la noticia, ' .

@@ -21,15 +21,41 @@ ob_start();
 ?>
 
 <!-- ===== SLIDER ===== -->
-<?php if (!empty($sliders)): ?>
-<section id="inicio">
+<?php $hayTv = TV_STREAM_URL !== ''; ?>
+<?php if (!empty($sliders) || $hayTv): ?>
+<section id="inicio" class="<?= $hayTv ? 'hero-with-tv' : '' ?>">
   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
     <div class="carousel-indicators">
       <?php foreach ($sliders as $i => $slide): ?>
         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<?= $i ?>" class="<?= $i === 0 ? 'active' : '' ?>" aria-current="<?= $i === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $i + 1 ?>"></button>
       <?php endforeach; ?>
     </div>
+
+    <?php if ($hayTv): ?>
+      <!-- TV en vivo: capa fija encima de todos los slides (no rota con el carrusel) -->
+      <div class="tv-overlay">
+        <div class="container">
+          <div class="row justify-content-end">
+            <div class="col-lg-5">
+              <div class="tv-player-wrap">
+                <span class="tv-live-tag"><span class="live-dot on"></span> TV EN VIVO</span>
+                <button type="button" class="tv-unmute-btn" id="tvUnmute" hidden>
+                  <i class="bi bi-volume-mute-fill"></i> Activar sonido
+                </button>
+                <video id="tvPlayer" class="video-js vjs-big-play-centered vjs-16-9" controls playsinline preload="none">
+                  <source src="<?= h(TV_STREAM_URL) ?>" type="application/x-mpegURL">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+
     <div class="carousel-inner">
+      <?php if (empty($sliders)): ?>
+        <div class="carousel-item active"><div class="hero-slide slide-bg-2"></div></div>
+      <?php endif; ?>
       <?php foreach ($sliders as $i => $slide): ?>
         <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
           <div class="hero-slide <?= h($slide['clase_fondo']) ?>" <?php if (!empty($slide['imagen'])): ?>style="background-image:url('uploads/sliders/<?= h($slide['imagen']) ?>');background-size:cover;background-position:center;"<?php endif; ?>>

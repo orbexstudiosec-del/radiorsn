@@ -65,6 +65,11 @@
       localStorage.setItem('radioPlaying', '1');
     });
 
+    // Si arranca la radio, se detiene el video de TV en vivo.
+    audio.addEventListener('play', function () {
+      pausarTv();
+    });
+
     audio.addEventListener('pause', function () {
       btnPlay.disabled = false;
       setIcon(false);
@@ -100,6 +105,84 @@
           setStatus('Presiona play para reanudar', false);
         });
       }
+    }
+  }
+
+  /* ============================================================
+   *  TV en vivo (video HLS superpuesto sobre todos los slides)
+   *  - Si el video suena, se pausa la radio.
+   *  - Si suena la radio, se pausa el video.
+   * ============================================================ */
+  var tv = null;
+
+  function tvAudible() {
+    return !!tv && !tv.paused() && !tv.muted() && tv.volume() > 0;
+  }
+
+  function pausarTv() {
+    if (tv && !tv.paused()) tv.pause();
+  }
+
+  function pausarRadio() {
+    if (audio && !audio.paused) {
+      audio.pause();
+      audio.dataset.needsReload = '1';
+    }
+  }
+
+  // El botón "Activar sonido" solo se muestra mientras el video corre en silencio.
+  function actualizarBotonSonidoTv() {
+    var btn = document.getElementById('tvUnmute');
+    if (!btn) return;
+    btn.hidden = !(tv && !tv.paused() && tv.muted());
+  }
+
+  function alCambiarEstadoTv() {
+    if (tvAudible()) pausarRadio();
+    actualizarBotonSonidoTv();
+  }
+
+  function destruirTv() {
+    if (tv) {
+      tv.dispose();
+      tv = null;
+    }
+  }
+
+  function initTv() {
+    destruirTv();
+    var el = document.getElementById('tvPlayer');
+    if (!el || !window.videojs) return;
+
+    tv = videojs(el, { liveui: true });
+    tv.on('playing', alCambiarEstadoTv);
+    tv.on('volumechange', alCambiarEstadoTv);
+    tv.on('pause', actualizarBotonSonidoTv);
+
+    var btnSonido = document.getElementById('tvUnmute');
+    if (btnSonido) {
+      btnSonido.addEventListener('click', function () {
+        if (!tv) return;
+        tv.muted(false);
+        if (tv.volume() === 0) tv.volume(1);
+        if (tv.paused()) tv.play();
+        alCambiarEstadoTv();
+      });
+    }
+    tv.on('play', function () {
+      // Al reanudar un directo, saltar al punto en vivo actual.
+      if (tv.liveTracker && tv.liveTracker.isLive() && tv.liveTracker.behindLiveEdge()) {
+        tv.liveTracker.seekToLiveEdge();
+      }
+    });
+
+    // Autoplay en silencio (como el reproductor original), salvo que la radio
+    // ya esté sonando o se vaya a reanudar.
+    var radioActiva = (audio && !audio.paused) || localStorage.getItem('radioPlaying') === '1';
+    if (!radioActiva) {
+      tv.muted(true);
+      var p = tv.play();
+      if (p && p.catch) p.catch(function () {});
     }
   }
 
@@ -162,6 +245,7 @@
         new bootstrap.Carousel(el, { interval: 5000, ride: 'carousel' });
       });
     }
+    initTv();
     initScrollReveal();
     document.dispatchEvent(new CustomEvent('contentLoaded'));
   }
@@ -185,6 +269,7 @@
         return res.text().then(function (html) { return { html: html, title: title }; });
       })
       .then(function (data) {
+        destruirTv();
         contentEl.innerHTML = data.html;
         if (data.title) document.title = data.title;
         if (pushState) history.pushState({}, '', rawUrl);
