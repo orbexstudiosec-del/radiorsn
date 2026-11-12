@@ -306,28 +306,61 @@ img { max-width: 100%; }
   cursor: pointer;
   animation: tvUnmutePulse 2s infinite;
 }
+.tv-unmute-btn { white-space: nowrap; }
 .tv-unmute-btn[hidden] { display: none; }
+/* En móvil el botón es compacto y va arriba a la derecha, para no tapar la
+   imagen ni chocar con la barra de controles del video (que va abajo) */
+@media (max-width: 767.98px) {
+  .tv-unmute-btn {
+    top: .5rem;
+    left: auto;
+    right: .5rem;
+    transform: none;
+    font-size: .85rem;
+    padding: .45rem .95rem;
+    gap: .35rem;
+  }
+  .tv-unmute-btn i { font-size: 1.05rem; }
+  .tv-live-tag { font-size: .62rem; padding: .2rem .5rem; }
+}
 .tv-unmute-btn i { font-size: 1.3rem; }
 .tv-unmute-btn:hover { filter: brightness(1.1); }
 @keyframes tvUnmutePulse {
   0%, 100% { box-shadow: 0 6px 24px rgba(0,0,0,.45), 0 0 0 0 rgba(255,255,255,.45); }
   50%      { box-shadow: 0 6px 24px rgba(0,0,0,.45), 0 0 0 10px rgba(255,255,255,0); }
 }
-/* En móvil: el texto del slide sube y el video queda abajo, sin taparlo */
+/* En móvil/tablet: texto arriba y video justo debajo, sin hueco en medio.
+   El slider deja de ocupar toda la pantalla y mide lo que necesita:
+   header + texto + video + puntos del carrusel. --tv-h es el alto del video. */
 @media (max-width: 991.98px) {
+  .hero-with-tv {
+    --tv-h: calc((100vw - 1.5rem) * 9 / 16);
+    --tv-gap: 2.25rem; /* espacio bajo el video para los puntos del carrusel */
+  }
   .hero-with-tv .hero-slide {
     align-items: flex-start;
-    padding-bottom: calc((100vw - 2rem) * 9 / 16 + 4rem);
+    min-height: calc(var(--header-h, 92px) + 1rem + 10.5rem + var(--tv-h) + var(--tv-gap) + 1rem);
+    padding-top: 1rem;
+    padding-bottom: calc(var(--tv-h) + var(--tv-gap) + 1rem);
   }
   .hero-with-tv .tv-overlay {
     align-items: flex-end;
-    padding-bottom: 2.75rem;
+    padding-bottom: var(--tv-gap);
   }
   .hero-with-tv .tv-overlay .container { padding-top: 0; }
+  .hero-with-tv .carousel-indicators { margin-bottom: .6rem; }
+}
+@media (max-width: 767.98px) {
+  /* Video casi de borde a borde (12px por lado) para que se vea más grande */
+  .hero-with-tv .tv-overlay .container { padding-left: .75rem; padding-right: .75rem; }
+  .tv-player-wrap { border-radius: .75rem; }
+  .hero-with-tv .hero-slide h1 { font-size: 1.6rem; margin-bottom: .35rem; }
+  .hero-with-tv .hero-slide p { font-size: .95rem; margin-bottom: .75rem; }
+  .hero-with-tv .hero-slide .btn-lg { font-size: 1rem; padding: .55rem 1.1rem; }
 }
 @media (min-width: 768px) and (max-width: 991.98px) {
-  .hero-with-tv .hero-slide { padding-bottom: calc(720px * 9 / 16 + 4rem); }
-  .hero-with-tv .tv-overlay .col-lg-5 { max-width: 720px; margin: 0 auto; }
+  /* El .container mide 720px (696px útiles) en este rango */
+  .hero-with-tv { --tv-h: calc(696px * 9 / 16); }
 }
 .tv-player-wrap .video-js { width: 100%; }
 /* Reserva el espacio 16:9 mientras video.js todavía no carga (evita saltos). */
