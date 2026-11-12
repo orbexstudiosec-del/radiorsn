@@ -2,4 +2,6 @@
 deployment:
   tasks:
     - export DEPLOYPATH=$HOME/public_html/
-    - /usr/bin/rsync -av --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' ./ $DEPLOYPATH
+    # -rlt en vez de -a: no copia permisos/grupo del repo clonado.
+    # --chmod fuerza permisos legibles por el servidor web (carpetas 755, archivos 644).
+    - /usr/bin/rsync -rltv --chmod=D755,F644 --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' ./ $DEPLOYPATH
