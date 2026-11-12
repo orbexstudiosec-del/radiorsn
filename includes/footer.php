@@ -4,7 +4,7 @@
     <div class="container">
       <div class="row gy-4">
         <div class="col-md-4">
-          <img src="assets/img/logo.png" alt="<?= h(SITE_NAME) ?>" class="brand-logo mb-2" onerror="this.style.display='none'">
+          <img src="<?= h(asset('assets/img/logo.png')) ?>" alt="<?= h(SITE_NAME) ?>" class="brand-logo mb-2" width="181" height="60" loading="lazy" onerror="this.style.display='none'">
           <p class="footer-desc small mb-0"><?= h(SITE_DESCRIPCION_FOOTER) ?></p>
         </div>
         <div class="col-md-4">
@@ -40,8 +40,7 @@
   <?php include __DIR__ . '/player.php'; ?>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js"></script>
-  <script src="assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="<?= h(asset('assets/js/main.js')) ?>" defer></script>
 </body>
 </html>

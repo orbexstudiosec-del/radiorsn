@@ -53,7 +53,7 @@ ob_start();
                 <span class="news-cat-badge" style="background:<?= h($n['categoria_color']) ?>"><?= h($n['categoria_nombre']) ?></span>
               <?php endif; ?>
               <?php if (!empty($n['imagen'])): ?>
-                <img src="uploads/noticias/<?= h($n['imagen']) ?>" class="card-img-top" alt="<?= h($n['titulo']) ?>">
+                <img src="<?= h(imagenOptimizada('noticias', $n['imagen'], 800)) ?>" class="card-img-top" alt="<?= h($n['titulo']) ?>" loading="lazy" decoding="async">
               <?php else: ?>
                 <div class="card-img-top d-flex align-items-center justify-content-center">
                   <i class="bi bi-newspaper text-white fs-1"></i>

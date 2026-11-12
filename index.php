@@ -42,7 +42,7 @@ ob_start();
                 <button type="button" class="tv-unmute-btn" id="tvUnmute" hidden>
                   <i class="bi bi-volume-mute-fill"></i> Activar sonido
                 </button>
-                <video id="tvPlayer" class="video-js vjs-big-play-centered vjs-16-9" controls playsinline preload="none">
+                <video id="tvPlayer" class="video-js vjs-big-play-centered vjs-16-9" playsinline preload="none">
                   <source src="<?= h(TV_STREAM_URL) ?>" type="application/x-mpegURL">
                 </video>
               </div>
@@ -58,7 +58,9 @@ ob_start();
       <?php endif; ?>
       <?php foreach ($sliders as $i => $slide): ?>
         <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
-          <div class="hero-slide <?= h($slide['clase_fondo']) ?>" <?php if (!empty($slide['imagen'])): ?>style="background-image:url('uploads/sliders/<?= h($slide['imagen']) ?>');background-size:cover;background-position:center;"<?php endif; ?>>
+          <?php $fondo = !empty($slide['imagen']) ? imagenOptimizada('sliders', $slide['imagen'], 1920) : null; ?>
+          <?php /* Solo el primer slide carga su imagen de inmediato; el resto la recibe (data-bg) al terminar de cargar la página. */ ?>
+          <div class="hero-slide <?= h($slide['clase_fondo']) ?>" <?php if ($fondo): ?><?php if ($i === 0): ?>style="background-image:url('<?= h($fondo) ?>');background-size:cover;background-position:center;"<?php else: ?>data-bg="<?= h($fondo) ?>" style="background-size:cover;background-position:center;"<?php endif; ?><?php endif; ?>>
             <div class="container">
               <div class="col-lg-7">
                 <h1><?= h($slide['titulo']) ?></h1>
@@ -94,7 +96,7 @@ ob_start();
   <?php else: ?>
     <a href="noticia.php?slug=<?= urlencode($noticiaDestacada['slug']) ?>" class="featured-news mb-4" data-ajax-link>
       <div class="featured-news-img <?= empty($noticiaDestacada['imagen']) ? 'no-image' : '' ?>"
-           <?php if (!empty($noticiaDestacada['imagen'])): ?>style="background-image:url('uploads/noticias/<?= h($noticiaDestacada['imagen']) ?>');"<?php endif; ?>>
+           <?php if (!empty($noticiaDestacada['imagen'])): ?>style="background-image:url('<?= h(imagenOptimizada('noticias', $noticiaDestacada['imagen'], 1200)) ?>');"<?php endif; ?>>
         <span class="news-date-badge"><?= fechaLegible($noticiaDestacada['creado_en']) ?></span>
         <?php if (!empty($noticiaDestacada['categoria_nombre'])): ?>
           <span class="news-cat-badge" style="background:<?= h($noticiaDestacada['categoria_color']) ?>"><?= h($noticiaDestacada['categoria_nombre']) ?></span>
@@ -120,7 +122,7 @@ ob_start();
                   <span class="news-cat-badge" style="background:<?= h($n['categoria_color']) ?>"><?= h($n['categoria_nombre']) ?></span>
                 <?php endif; ?>
                 <?php if (!empty($n['imagen'])): ?>
-                  <img src="uploads/noticias/<?= h($n['imagen']) ?>" class="card-img-top" alt="<?= h($n['titulo']) ?>">
+                  <img src="<?= h(imagenOptimizada('noticias', $n['imagen'], 800)) ?>" class="card-img-top" alt="<?= h($n['titulo']) ?>" loading="lazy" decoding="async">
                 <?php else: ?>
                   <div class="card-img-top d-flex align-items-center justify-content-center">
                     <i class="bi bi-newspaper text-white fs-1"></i>

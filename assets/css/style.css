@@ -330,6 +330,13 @@ img { max-width: 100%; }
   .hero-with-tv .tv-overlay .col-lg-5 { max-width: 720px; margin: 0 auto; }
 }
 .tv-player-wrap .video-js { width: 100%; }
+/* Reserva el espacio 16:9 mientras video.js todavía no carga (evita saltos). */
+.tv-player-wrap > video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
 .tv-player-wrap .video-js .vjs-big-play-button {
   background-color: var(--brand);
   border: none;

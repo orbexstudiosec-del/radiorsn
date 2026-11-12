@@ -23,6 +23,7 @@ if ($slider) {
         if (is_file($ruta)) {
             @unlink($ruta);
         }
+        borrarImagenesOptimizadas('sliders', $slider['imagen']);
     }
     $_SESSION['flash'] = 'Diapositiva eliminada.';
 }

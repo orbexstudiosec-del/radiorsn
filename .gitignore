@@ -6,3 +6,6 @@ includes/config.local.php
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Versiones WebP optimizadas que el sitio genera solo en el servidor
+uploads/*/opt/

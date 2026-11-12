@@ -142,19 +142,68 @@
     actualizarBotonSonidoTv();
   }
 
+  var tvToken = 0; // invalida cargas pendientes si se navega a otra página
+
   function destruirTv() {
+    tvToken++;
     if (tv) {
       tv.dispose();
       tv = null;
     }
   }
 
+  /** Ejecuta cb cuando la página ya terminó de cargar (imágenes, estilos, etc.). */
+  function cuandoCargue(cb) {
+    if (document.readyState === 'complete') {
+      cb();
+    } else {
+      window.addEventListener('load', cb, { once: true });
+    }
+  }
+
+  // video.js (~600 KB) solo se descarga cuando una página tiene el reproductor
+  // de TV, y después de que la página cargó, para no frenar la carga inicial.
+  var VIDEOJS_CSS = 'https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css';
+  var VIDEOJS_JS = 'https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js';
+  var videojsCallbacks = null;
+
+  function cargarVideoJs(cb) {
+    if (window.videojs) return cb();
+    if (videojsCallbacks) return videojsCallbacks.push(cb);
+    videojsCallbacks = [cb];
+
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = VIDEOJS_CSS;
+    document.head.appendChild(css);
+
+    var js = document.createElement('script');
+    js.src = VIDEOJS_JS;
+    js.onload = function () {
+      var pendientes = videojsCallbacks;
+      videojsCallbacks = null;
+      pendientes.forEach(function (fn) { fn(); });
+    };
+    js.onerror = function () { videojsCallbacks = null; };
+    document.head.appendChild(js);
+  }
+
   function initTv() {
     destruirTv();
+    if (!document.getElementById('tvPlayer')) return;
+    var token = tvToken;
+    cuandoCargue(function () {
+      cargarVideoJs(function () {
+        if (token === tvToken) crearTv();
+      });
+    });
+  }
+
+  function crearTv() {
     var el = document.getElementById('tvPlayer');
     if (!el || !window.videojs) return;
 
-    tv = videojs(el, { liveui: true });
+    tv = videojs(el, { liveui: true, controls: true });
     tv.on('playing', alCambiarEstadoTv);
     tv.on('volumechange', alCambiarEstadoTv);
     tv.on('pause', actualizarBotonSonidoTv);
@@ -237,14 +286,33 @@
     elementos.forEach(function (el) { observer.observe(el); });
   }
 
+  // Fondos de slides diferidos: se aplican al terminar la carga de la página,
+  // o antes si el usuario pasa a ese slide.
+  function aplicarFondo(el) {
+    if (el && el.dataset.bg) {
+      el.style.backgroundImage = "url('" + el.dataset.bg + "')";
+      el.removeAttribute('data-bg');
+    }
+  }
+
+  function initFondosDiferidos() {
+    cuandoCargue(function () {
+      document.querySelectorAll('[data-bg]').forEach(aplicarFondo);
+    });
+  }
+
   function initDynamicComponents() {
     if (window.bootstrap && window.bootstrap.Carousel) {
       document.querySelectorAll('.carousel').forEach(function (el) {
         var existing = bootstrap.Carousel.getInstance(el);
         if (existing) existing.dispose();
         new bootstrap.Carousel(el, { interval: 5000, ride: 'carousel' });
+        el.addEventListener('slide.bs.carousel', function (e) {
+          if (e.relatedTarget) aplicarFondo(e.relatedTarget.querySelector('[data-bg]'));
+        });
       });
     }
+    initFondosDiferidos();
     initTv();
     initScrollReveal();
     document.dispatchEvent(new CustomEvent('contentLoaded'));

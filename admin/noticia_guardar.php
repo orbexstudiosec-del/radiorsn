@@ -70,6 +70,7 @@ if (!empty($_FILES['imagen']['name']) && $_FILES['imagen']['error'] === UPLOAD_E
         if ($imagenNombre && is_file($carpetaDestino . $imagenNombre)) {
             @unlink($carpetaDestino . $imagenNombre);
         }
+        borrarImagenesOptimizadas('noticias', $imagenNombre);
         $imagenNombre = $nuevoNombre;
     }
 }

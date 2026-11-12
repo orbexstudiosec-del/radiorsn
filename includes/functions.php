@@ -212,6 +212,106 @@ function getSliderPorId(int $id): ?array
 /** Clases de degradado disponibles para el fondo del slider cuando no hay imagen */
 const SLIDER_FONDOS = ['slide-bg-1', 'slide-bg-2', 'slide-bg-3', 'slide-bg-4'];
 
+/* ============================================================
+ *  Imágenes optimizadas (WebP redimensionado)
+ *  Las versiones livianas se generan la primera vez que se piden y se
+ *  guardan en uploads/<carpeta>/opt/. Si algo falla (sin GD, imagen
+ *  enorme, sin permisos) se usa la imagen original sin romper nada.
+ * ============================================================ */
+
+/** URL relativa de la versión optimizada de una imagen subida (o la original si no se puede). */
+function imagenOptimizada(string $carpeta, ?string $archivo, int $anchoMax = 1200): string
+{
+    $original = 'uploads/' . $carpeta . '/' . $archivo;
+    if (empty($archivo) || !preg_match('/^[a-zA-Z0-9_-]+\.(jpe?g|png|webp)$/i', $archivo)) {
+        return $original;
+    }
+
+    $base = dirname(__DIR__) . '/uploads/' . $carpeta . '/';
+    $nombreOpt = pathinfo($archivo, PATHINFO_FILENAME) . '-' . $anchoMax . '.webp';
+    $rutaOpt = $base . 'opt/' . $nombreOpt;
+    $urlOpt = 'uploads/' . $carpeta . '/opt/' . $nombreOpt;
+
+    if (is_file($rutaOpt)) {
+        return $urlOpt;
+    }
+    return generarImagenOptimizada($base . $archivo, $rutaOpt, $anchoMax) ? $urlOpt : $original;
+}
+
+/** Crea un WebP redimensionado a $anchoMax de ancho. Devuelve true si quedó creado. */
+function generarImagenOptimizada(string $origen, string $destino, int $anchoMax): bool
+{
+    if (!is_file($origen) || !function_exists('imagewebp')) {
+        return false;
+    }
+    $info = @getimagesize($origen);
+    // Evita agotar la memoria con imágenes gigantes (más de ~40 megapíxeles).
+    if (!$info || $info[0] * $info[1] > 40000000) {
+        return false;
+    }
+
+    switch ($info[2]) {
+        case IMAGETYPE_JPEG: $img = @imagecreatefromjpeg($origen); break;
+        case IMAGETYPE_PNG:  $img = @imagecreatefrompng($origen); break;
+        case IMAGETYPE_WEBP: $img = @imagecreatefromwebp($origen); break;
+        default: return false;
+    }
+    if (!$img) {
+        return false;
+    }
+
+    $ancho = imagesx($img);
+    $alto = imagesy($img);
+    if ($ancho > $anchoMax) {
+        $nuevoAlto = (int)round($alto * $anchoMax / $ancho);
+        $redim = imagecreatetruecolor($anchoMax, $nuevoAlto);
+        imagealphablending($redim, false);
+        imagesavealpha($redim, true);
+        imagecopyresampled($redim, $img, 0, 0, 0, 0, $anchoMax, $nuevoAlto, $ancho, $alto);
+        imagedestroy($img);
+        $img = $redim;
+    } elseif (!imageistruecolor($img)) {
+        imagepalettetotruecolor($img);
+    }
+    imagesavealpha($img, true);
+
+    $dir = dirname($destino);
+    if (!is_dir($dir) && !@mkdir($dir, 0755, true)) {
+        imagedestroy($img);
+        return false;
+    }
+    // Se escribe a un temporal y se renombra, para que dos visitas simultáneas
+    // nunca sirvan un archivo a medio escribir.
+    $tmp = $destino . '.' . bin2hex(random_bytes(4)) . '.tmp';
+    $ok = @imagewebp($img, $tmp, 80);
+    imagedestroy($img);
+    if (!$ok || !@rename($tmp, $destino)) {
+        @unlink($tmp);
+        return false;
+    }
+    @chmod($destino, 0644);
+    return true;
+}
+
+/** Borra las versiones optimizadas de una imagen (al reemplazarla o eliminarla). */
+function borrarImagenesOptimizadas(string $carpeta, ?string $archivo): void
+{
+    if (empty($archivo)) {
+        return;
+    }
+    $patron = dirname(__DIR__) . '/uploads/' . $carpeta . '/opt/' . pathinfo($archivo, PATHINFO_FILENAME) . '-*.webp';
+    foreach (glob($patron) ?: [] as $f) {
+        @unlink($f);
+    }
+}
+
+/** URL de un archivo propio (css/js) con versión según su fecha, para poder cachearlo largo tiempo. */
+function asset(string $ruta): string
+{
+    $archivo = dirname(__DIR__) . '/' . $ruta;
+    return $ruta . (is_file($archivo) ? '?v=' . filemtime($archivo) : '');
+}
+
 /** Formatea una fecha MySQL a formato legible en español */
 function fechaLegible(string $fechaMysql): string
 {

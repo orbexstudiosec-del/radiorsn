@@ -46,7 +46,7 @@ if (!$noticia) {
       <h1 class="article-title fw-bold mb-4"><?= h($noticia['titulo']) ?></h1>
 
       <?php if (!empty($noticia['imagen'])): ?>
-        <img src="uploads/noticias/<?= h($noticia['imagen']) ?>" class="img-fluid rounded mb-4" alt="<?= h($noticia['titulo']) ?>">
+        <img src="<?= h(imagenOptimizada('noticias', $noticia['imagen'], 1200)) ?>" class="img-fluid rounded mb-4" alt="<?= h($noticia['titulo']) ?>" decoding="async">
       <?php endif; ?>
 
       <div class="news-body fs-6 fs-md-5">

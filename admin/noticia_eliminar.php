@@ -23,6 +23,7 @@ if ($noticia) {
         if (is_file($ruta)) {
             @unlink($ruta);
         }
+        borrarImagenesOptimizadas('noticias', $noticia['imagen']);
     }
     $_SESSION['flash'] = 'Noticia eliminada.';
 }
